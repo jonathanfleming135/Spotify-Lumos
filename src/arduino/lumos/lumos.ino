@@ -24,8 +24,6 @@ void setup() {
     strip.begin();
     strip.show();
 
-    //randomSeed(analogRead(0));
-
     pinMode(INTERRUPT_PIN, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), interruptServiceRoutine, CHANGE);
 
