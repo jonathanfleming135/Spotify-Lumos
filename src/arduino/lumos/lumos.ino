@@ -34,6 +34,13 @@ void setup() {
 
 void loop() {
 
+    while(1) {
+        if (Serial.available() > 0) {
+            int incomingByte = Serial.read();
+            Serial.print(char(incomingByte));
+        }
+    }
+
         uint16_t patternSel = globalCount % int(NUM_PATTERNS);
 
         switch(patternSel) {

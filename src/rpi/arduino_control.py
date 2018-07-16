@@ -1,10 +1,12 @@
 #!/usr/bin/python
 import json
-import pprint
+import serial
 
 NUM_LEDS = 5
 
 def main():
+    serialPort = serial.Serial("/dev/ttyACM0", baudrate=9600)
+
     LED1 = (1, 50)
     LED2 = (2, 100)
     LED3 = (3, 150)
@@ -13,9 +15,11 @@ def main():
 
     LEDs = [LED1, LED2, LED3, LED4, LED5]
 
-    Set_LEDs(LEDs)
+    packet = encode_packet(LEDs)
+    serialPort.write(packet.encode())
+    print(packet)
 
-def Set_LEDs(LED_values):
+def encode_packet(LED_values):
     json_LEDs = []
     for LED in LED_values:
         json_LEDs.append(
@@ -28,7 +32,7 @@ def Set_LEDs(LED_values):
                     "LEDs": json_LEDs
     }
 
-    print(json.dumps(json_obj, sort_keys=True, indent=4, separators=(',', ': ')))
+    return json.dumps(json_obj, sort_keys=True, indent=4, separators=(',', ': '))
 
 
 if __name__ == '__main__':
