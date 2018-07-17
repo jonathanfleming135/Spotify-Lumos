@@ -1,4 +1,5 @@
 #include <Adafruit_NeoPixel.h>
+#include <ArduinoJson.h>
 
 #define DOUT 6
 #define INTERRUPT_PIN 2
@@ -34,10 +35,27 @@ void setup() {
 
 void loop() {
 
+    char buffer[10000];
+
     while(1) {
         if (Serial.available() > 0) {
-            int incomingByte = Serial.read();
-            Serial.print(char(incomingByte));
+            char incomingByte = Serial.read();
+            if (incomingByte == '$') {
+                int count = 0;
+                while (incomingByte != '*') {
+                    if (Serial.available() > 0) {
+                        buffer[count] = Serial.read();
+                        incomingByte = buffer[count];
+                        //Serial.print(incomingByte);
+                        count++;
+                    }
+                }
+                int pcount;
+                for(pcount = 0; pcount < count; pcount++) {
+                    Serial.print(buffer[pcount]);
+                    delay(2);
+                }
+            }
         }
     }
 

@@ -17,7 +17,7 @@ def main():
 
     packet = encode_packet(LEDs)
     serialPort.write(packet.encode())
-    print(packet)
+    print(packet.encode())
 
 def encode_packet(LED_values):
     json_LEDs = []
@@ -32,7 +32,10 @@ def encode_packet(LED_values):
                     "LEDs": json_LEDs
     }
 
-    return json.dumps(json_obj, sort_keys=True, indent=4, separators=(',', ': '))
+    packet = json.dumps(json_obj, sort_keys=True, indent=4, separators=(',', ': '))
+    packet = "$\n" + str(packet) + "\n*"
+
+    return packet
 
 
 if __name__ == '__main__':
