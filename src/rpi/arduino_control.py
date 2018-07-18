@@ -17,7 +17,7 @@ def main():
 
     packet = encode_packet(LEDs)
     serialPort.write(packet.encode())
-    print(packet.encode())
+    print(packet)
 
 def encode_packet(LED_values):
     json_LEDs = []
