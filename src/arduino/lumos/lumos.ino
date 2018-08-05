@@ -34,69 +34,34 @@ void setup() {
 }
 
 void loop() {
+    char pckt_in[1000] = "";
+    read_packet(pckt_in);
+    Serial.print(pckt_in);
+}
 
-    char buffer[10000];
+void read_packet(char* pckt_in)
+{
+    int32_t count = 0;
 
-    while(1) {
-        if (Serial.available() > 0) {
-            char incomingByte = Serial.read();
-            if (incomingByte == '$') {
-                int count = 0;
-                while (incomingByte != '*') {
-                    if (Serial.available() > 0) {
-                        buffer[count] = Serial.read();
-                        incomingByte = buffer[count];
-                        Serial.print(buffer[count]);
-                        count++;
-                    }
+    if (Serial.available() > 0) {
+        if (Serial.read() == '$') {
+            //start reading packet
+            char curr = ' ';
+            while (curr != '*') {
+                if (Serial.available() > 0) {
+                    curr = (char) Serial.read();
+                    pckt_in[count] = curr;
+                    count++;
                 }
-                Serial.println("erg");
-
-                buffer[count-1] = '\r';
-                buffer[count] = '\r';
-
-                int pcount;
-                for(pcount = 0; pcount < count; pcount++) {
-                    Serial.print(buffer[pcount]);
-                    delay(2);
-                }
-
-                //delay(10);
-                Serial.println("line 63");
-                //delay(10);
-
-                StaticJsonBuffer<1000> jsonBuffer;
-                JsonObject &root = jsonBuffer.parseObject(buffer);
-
-                //delay(10);
-                Serial.println("line 66");
-                //delay(10);
-
-                if (!root.success()) {
-                    Serial.println("parseObject() failed");
-                    continue;
-                }
-
-                //delay(10);
-                Serial.println("line 71");
-                //delay(10);
-
-                int led1 = root["LEDs"][0]["LED_num"];
-                int val1 = root["LEDs"][0]["value"];
-                Serial.print("led1: ");
-                Serial.println(led1);
-                delay(10);
-                Serial.print("val1: ");
-                Serial.println(val1);
-
-                //int pcount;
-                //for(pcount = 0; pcount < count-1; pcount++) {
-                //    Serial.print(buffer[pcount]);
-                //    delay(2);
-                //}
             }
         }
     }
+
+    pckt_in[count] = '\0';
+    pckt_in[count-1] = '\0';
+}
+
+
     /*
     StaticJsonBuffer<200> jsonBuffer;
 
@@ -108,24 +73,24 @@ double latitude    = root["data"][0];
 double longitude   = root["data"][1];
     */
 
-        uint16_t patternSel = globalCount % int(NUM_PATTERNS);
-
-        switch(patternSel) {
-            case 0:
-                rainbow();
-                break;
-            case 1:
-                fillUp();
-                break;
-            case 2:
-                colourSpin();
-                break;
-            default:
-                rainbow();
-                break;
-        }
-
-}
+//        uint16_t patternSel = globalCount % int(NUM_PATTERNS);
+//
+//        switch(patternSel) {
+//            case 0:
+//                rainbow();
+//                break;
+//            case 1:
+//                fillUp();
+//                break;
+//            case 2:
+//                colourSpin();
+//                break;
+//            default:
+//                rainbow();
+//                break;
+//        }
+//
+//}
 
 uint32_t colourWheel(byte value) {
     if(value < 85) {
