@@ -21,6 +21,14 @@ def main():
     print(packet)
 
 def encode_packet(LED_values):
+    packet = ""
+    for LED in LED_values:
+        packet += str(LED[0])
+        packet += ','
+        packet += str(LED[1])
+        packet += '\n'
+
+    '''
     json_LEDs = []
     for LED in LED_values:
         json_LEDs.append(
@@ -34,7 +42,8 @@ def encode_packet(LED_values):
     }
 
     packet = json.dumps(json_obj, sort_keys=True, indent=4, separators=(',', ': '))
-    packet = "$\n" + str(packet) + "\n*"
+    '''
+    packet = "$\n" + packet + "*"
 
     return packet
 
