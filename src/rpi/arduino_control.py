@@ -12,7 +12,7 @@ def main():
     LED3 = (3, 150)
     LED4 = (4, 200)
     LED5 = (5, 250)
-    LED6 = (6, 300)
+    LED6 = (6, 255)
 
     LEDs = [LED1, LED2, LED3, LED4, LED5, LED6]
 

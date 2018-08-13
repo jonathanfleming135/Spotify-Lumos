@@ -37,15 +37,18 @@ void setup() {
 }
 
 void loop() {
-    char pckt_in[1000] = "";
-    read_packet(pckt_in);
-    char pckt[1000] = "";
-    parse_packet(pckt_in);
+    uint8_t led_colours[NUM_PIXELS];
+    read_packet(led_colours);
+    //parse_packet(pckt_in, led_colours);
 }
 
-void read_packet(char* pckt_in)
+void read_packet(uint8_t* led_colours)
 {
-    int32_t count = 0;
+    uint16_t count = 0;
+    uint8_t curr_colour;
+    uint8_t curr_led;
+    char line[10] = "";
+    char* token;
 
     while(true) {
         if (Serial.available() > 0) {
@@ -55,8 +58,19 @@ void read_packet(char* pckt_in)
                 while (curr != '*') {
                     if (Serial.available() > 0) {
                         curr = (char) Serial.read();
-                        pckt_in[count] = curr;
-                        count++;
+                        line[count] = curr;
+                        if (curr == '\n' && line[0] != '$' && line[0] != '*') {
+                            token = strtok(line, ",");
+                            //Serial.println(token);
+                            curr_led = atoi(token);
+                            token = strtok(NULL, ",");
+                            //Serial.println(token);
+                            curr_colour = atoi(token);
+                            led_colours[curr_led] = curr_colour;
+                            count = 0;
+                        }
+                        else
+                            count++;
                     }
                 }
                 break;
@@ -64,118 +78,43 @@ void read_packet(char* pckt_in)
         }
     }
 
-    pckt_in[count] = '\0';
-    pckt_in[count-1] = '\0';
+    int i;
+    for(i = 1; i < 7; i++) {
+        Serial.println(led_colours[i]);
+    }
 }
 
-void parse_packet(char* pckt_in)
+/*
+void parse_packet(char* pckt_in, uint16_t* led_colours)
 {
     char *line;
     int curr = LED_NUM;
+    int led;
+    uint16_t colour;
 
     line = strtok(pckt_in, "\n,");
     while (line != NULL) {
         switch(curr) {
             case LED_NUM:
                 Serial.print("num: ");
-                Serial.println(line);
+                //Serial.println(line);
                 curr = LED_VAL;
+                led = atoi(line);
+                Serial.println(led);
                 break;
             case LED_VAL:
                 Serial.print("val: ");
-                Serial.println(line);
+                //Serial.println(line);
                 curr = LED_NUM;
+                colour = (uint16_t) atoi(line);
+                Serial.println(colour);
+                led_colours[led] = colour;
                 break;
         }
-
         line = strtok(NULL, "\n,");
     }
-
-    //const size_t bufferSize = JSON_ARRAY_SIZE(6) + JSON_OBJECT_SIZE(1) + 6*JSON_OBJECT_SIZE(2) + 140;
-    //DynamicJsonBuffer jsonBuffer(bufferSize);
-
-    /*
-
-    StaticJsonBuffer<2000> jsonBuffer;
-
-    Serial.print(pckt_in);
-
-    delay(1000);
-
-    JsonObject& root = jsonBuffer.parseObject(pckt_in);
-
-    JsonArray& LEDs = root["LEDs"];
-
-    if (!root.success()) {
-        Serial.println("parseObject() failed");
-        return;
-    }
-
-    int LEDs0_LED_num = LEDs[0]["LED_num"]; // 1
-    int LEDs0_value = LEDs[0]["value"]; // 50
-
-    int LEDs1_LED_num = LEDs[1]["LED_num"]; // 2
-    int LEDs1_value = LEDs[1]["value"]; // 100
-
-    int LEDs2_LED_num = LEDs[2]["LED_num"]; // 3
-    int LEDs2_value = LEDs[2]["value"]; // 150
-
-    int LEDs3_LED_num = LEDs[3]["LED_num"]; // 4
-    int LEDs3_value = LEDs[3]["value"]; // 200
-
-    Serial.println(LEDs2_value);
-
-    */
-
-    /*
-    Serial.print(pckt_in);
-    StaticJsonBuffer<2000> jsonBuffer;
-    JsonObject &root = jsonBuffer.parseObject(pckt_in);
-
-    if (!root.success()) {
-        Serial.println("parseObject() failed");
-        return;
-    }
-
-    int led1 = root["LEDs"][0]["LED_num"];
-    int val1 = root["LEDs"][0]["value"];
-    //Serial.print("led1: ");
-    //Serial.println(led1);
-    //Serial.print("val1: ");
-    //Serial.println(val1);
-    */
 }
-
-
-    /*
-    StaticJsonBuffer<200> jsonBuffer;
-
-JsonObject& root = jsonBuffer.parseObject(json);
-
-const char* sensor = root["sensor"];
-long time          = root["time"];
-double latitude    = root["data"][0];
-double longitude   = root["data"][1];
-    */
-
-//        uint16_t patternSel = globalCount % int(NUM_PATTERNS);
-//
-//        switch(patternSel) {
-//            case 0:
-//                rainbow();
-//                break;
-//            case 1:
-//                fillUp();
-//                break;
-//            case 2:
-//                colourSpin();
-//                break;
-//            default:
-//                rainbow();
-//                break;
-//        }
-//
-//}
+*/
 
 uint32_t colourWheel(byte value) {
     if(value < 85) {
