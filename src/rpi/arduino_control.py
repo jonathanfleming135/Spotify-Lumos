@@ -6,16 +6,20 @@ NUM_LEDS = 5
 
 def main():
     serialPort = serial.Serial("/dev/ttyACM0", baudrate=9600)
+    LEDs = []
 
-    LED1 = (1, 50)
+    for LED in range (0, 443):
+        LEDs.append((LED, 150))
+    '''
+    LED1 = (1, 100)
     LED2 = (2, 100)
-    LED3 = (3, 150)
-    LED4 = (4, 200)
-    LED5 = (5, 250)
-    LED6 = (6, 5)
+    LED3 = (3, 100)
+    LED4 = (4, 100)
+    LED5 = (5, 100)
+    LED6 = (6, 100)
 
     LEDs = [LED1, LED2, LED3, LED4, LED5, LED6]
-
+    '''
     packet = encode_packet(LEDs)
     serialPort.write(packet.encode())
     print(packet)
