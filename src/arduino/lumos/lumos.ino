@@ -39,7 +39,7 @@ void setup() {
 void loop() {
     uint8_t led_colours[NUM_PIXELS];
     read_packet(led_colours);
-    write_packet(strip, led_colours);
+    write_packet(led_colours);
     //parse_packet(pckt_in, led_colours);
 }
 
@@ -83,7 +83,7 @@ void read_packet(uint8_t* led_colours)
     //}
 }
 
-void write_packet(Adafruit_NeoPixel strip, uint8_t* led_colours)
+void write_packet(uint8_t* led_colours)
 {
     int16_t i;
     for (i = 0; i < 7; i++) {
