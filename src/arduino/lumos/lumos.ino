@@ -39,6 +39,7 @@ void setup() {
 void loop() {
     uint8_t led_colours[NUM_PIXELS];
     read_packet(led_colours);
+    write_packet(strip, led_colours);
     //parse_packet(pckt_in, led_colours);
 }
 
@@ -61,10 +62,8 @@ void read_packet(uint8_t* led_colours)
                         line[count] = curr;
                         if (curr == '\n' && line[0] != '$' && line[0] != '*') {
                             token = strtok(line, ",");
-                            //Serial.println(token);
                             curr_led = atoi(token);
                             token = strtok(NULL, ",");
-                            //Serial.println(token);
                             curr_colour = atoi(token);
                             led_colours[curr_led] = curr_colour;
                             count = 0;
@@ -78,43 +77,23 @@ void read_packet(uint8_t* led_colours)
         }
     }
 
-    int i;
-    for(i = 1; i < 7; i++) {
-        Serial.println(led_colours[i]);
-    }
+    //int i;
+    //for(i = 1; i < 7; i++) {
+    //    Serial.println(led_colours[i]);
+    //}
 }
 
-/*
-void parse_packet(char* pckt_in, uint16_t* led_colours)
+void write_packet(Adafruit_NeoPixel strip, uint8_t* led_colours)
 {
-    char *line;
-    int curr = LED_NUM;
-    int led;
-    uint16_t colour;
-
-    line = strtok(pckt_in, "\n,");
-    while (line != NULL) {
-        switch(curr) {
-            case LED_NUM:
-                Serial.print("num: ");
-                //Serial.println(line);
-                curr = LED_VAL;
-                led = atoi(line);
-                Serial.println(led);
-                break;
-            case LED_VAL:
-                Serial.print("val: ");
-                //Serial.println(line);
-                curr = LED_NUM;
-                colour = (uint16_t) atoi(line);
-                Serial.println(colour);
-                led_colours[led] = colour;
-                break;
-        }
-        line = strtok(NULL, "\n,");
+    int16_t i;
+    for (i = 0; i < 7; i++) {
+        strip.setPixelColor(i, colourWheel((byte) led_colours[i]));
+        Serial.print(i);
+        Serial.print(",");
+        Serial.println((byte) led_colours[i]);
     }
+    strip.show();
 }
-*/
 
 uint32_t colourWheel(byte value) {
     if(value < 85) {
