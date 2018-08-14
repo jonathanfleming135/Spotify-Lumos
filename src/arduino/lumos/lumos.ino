@@ -1,13 +1,13 @@
 #include <Adafruit_NeoPixel.h>
-#include <ArduinoJson.h>
 
 #define DOUT 6
-#define INTERRUPT_PIN 2
 #define NUM_PIXELS 422
-#define NUM_PATTERNS 3
-
-volatile bool changePattern;
-int16_t globalCount;
+#define LED_NUM 0
+#define LED_VAL 1
+#define MAX_BAUD 115200
+#define MAX_LINE_LEN 10
+#define START_CHAR '$'
+#define TERM_CHAR '*'
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = pin number (most are valid)
@@ -19,114 +19,99 @@ int16_t globalCount;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, DOUT, NEO_GRB + NEO_KHZ800);
 
 void setup() {
-
-    Serial.begin(9600);
-
+    Serial.begin(MAX_BAUD);
     strip.begin();
-    strip.show();
-
-    pinMode(INTERRUPT_PIN, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), interruptServiceRoutine, CHANGE);
-
-    globalCount = 0;
-    changePattern = false;
-
 }
 
 void loop() {
+    uint8_t led_colours[NUM_PIXELS];
+    read_packet(led_colours);
+    write_packet(led_colours);
+}
 
-    char buffer[10000];
+/**
+  * Polls for a packet to be available, then parses the packet as it comes in,
+  * line by line.
+  *
+  * @param[out] led_colours
+  */
+void read_packet(uint8_t* led_colours)
+{
+    uint8_t count = 0;
+    char line[MAX_LINE_LEN] = "";
 
-    while(1) {
+    wait_for_packet_start();
+    char curr = ' ';
+    while (curr != TERM_CHAR) {
         if (Serial.available() > 0) {
-            char incomingByte = Serial.read();
-            if (incomingByte == '$') {
-                int count = 0;
-                while (incomingByte != '*') {
-                    if (Serial.available() > 0) {
-                        buffer[count] = Serial.read();
-                        incomingByte = buffer[count];
-                        Serial.print(buffer[count]);
-                        count++;
-                    }
-                }
-                Serial.println("erg");
+            curr = (char) Serial.read();
+            line[count] = curr;
+            if (curr == '\n') {
+                parse_line(line, led_colours);
+                count = 0;
+            }
+            else
+                count++;
+        }
+    }
+}
 
-                buffer[count-1] = '\r';
-                buffer[count] = '\r';
-
-                int pcount;
-                for(pcount = 0; pcount < count; pcount++) {
-                    Serial.print(buffer[pcount]);
-                    delay(2);
-                }
-
-                //delay(10);
-                Serial.println("line 63");
-                //delay(10);
-
-                StaticJsonBuffer<1000> jsonBuffer;
-                JsonObject &root = jsonBuffer.parseObject(buffer);
-
-                //delay(10);
-                Serial.println("line 66");
-                //delay(10);
-
-                if (!root.success()) {
-                    Serial.println("parseObject() failed");
-                    continue;
-                }
-
-                //delay(10);
-                Serial.println("line 71");
-                //delay(10);
-
-                int led1 = root["LEDs"][0]["LED_num"];
-                int val1 = root["LEDs"][0]["value"];
-                Serial.print("led1: ");
-                Serial.println(led1);
-                delay(10);
-                Serial.print("val1: ");
-                Serial.println(val1);
-
-                //int pcount;
-                //for(pcount = 0; pcount < count-1; pcount++) {
-                //    Serial.print(buffer[pcount]);
-                //    delay(2);
-                //}
+/**
+  * Polls for a packet to be available, helper func for read_packet
+  */
+void wait_for_packet_start() {
+    while (true) {
+        if (Serial.available() > 0) {
+            if (Serial.read() == START_CHAR) {
+                return;
             }
         }
     }
-    /*
-    StaticJsonBuffer<200> jsonBuffer;
-
-JsonObject& root = jsonBuffer.parseObject(json);
-
-const char* sensor = root["sensor"];
-long time          = root["time"];
-double latitude    = root["data"][0];
-double longitude   = root["data"][1];
-    */
-
-        uint16_t patternSel = globalCount % int(NUM_PATTERNS);
-
-        switch(patternSel) {
-            case 0:
-                rainbow();
-                break;
-            case 1:
-                fillUp();
-                break;
-            case 2:
-                colourSpin();
-                break;
-            default:
-                rainbow();
-                break;
-        }
-
 }
 
+/**
+  * Parses a single line from an incoming packet, helper func for read_packet
+  *
+  * @param[in]  line
+  * @param[out] led_colours
+  */
+void parse_line(char* line, uint8_t* led_colours)
+{
+    uint8_t curr_colour;
+    uint16_t curr_led;
+    char* token;
+
+    if (line[0] == START_CHAR || line[0] == TERM_CHAR) {
+        return;
+    } else {
+        token = strtok(line, ",");
+        curr_led = atoi(token);
+        token = strtok(NULL, ",");
+        curr_colour = atoi(token);
+        led_colours[curr_led] = curr_colour;
+    }
+}
+
+/**
+  * Iterates through all led_colours and writes the entire array to the led
+  * strip
+  *
+  * @param[in]  led_colours
+  */
+void write_packet(uint8_t* led_colours)
+{
+    uint16_t i;
+    for (i = 0; i < NUM_PIXELS; i++) {
+        strip.setPixelColor(i, colourWheel((byte) led_colours[i]));
+    }
+    strip.show();
+}
+
+/**
+  * Used to convert a byte value to a colour value for the led strip
+  *
+  * @param[in]  value
+  */
 uint32_t colourWheel(byte value) {
     if(value < 85) {
         return (strip.Color(round((value * 3)/4), round((255 - (value * 3))/4), 0) );
@@ -137,8 +122,4 @@ uint32_t colourWheel(byte value) {
         value -= 170;
         return (strip.Color(0, round((value * 3)/4), round((255 - (value * 3))/4)) );
     }
-}
-
-void interruptServiceRoutine() {
-  changePattern = true;
 }
