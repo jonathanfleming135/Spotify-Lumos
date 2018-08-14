@@ -4,6 +4,10 @@
 #define NUM_PIXELS 422
 #define LED_NUM 0
 #define LED_VAL 1
+#define MAX_BAUD 115200
+#define MAX_LINE_LEN 10
+#define START_CHAR '$'
+#define TERM_CHAR '*'
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = pin number (most are valid)
@@ -15,7 +19,7 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, DOUT, NEO_GRB + NEO_KHZ800);
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(MAX_BAUD);
     strip.begin();
 }
 
@@ -23,19 +27,22 @@ void loop() {
     uint8_t led_colours[NUM_PIXELS];
     read_packet(led_colours);
     write_packet(led_colours);
-    Serial.println(millis());
 }
 
+/**
+  * Polls for a packet to be available, then parses the packet as it comes in,
+  * line by line.
+  *
+  * @param[out] led_colours
+  */
 void read_packet(uint8_t* led_colours)
 {
     uint8_t count = 0;
-    char line[10] = "";
+    char line[MAX_LINE_LEN] = "";
 
     wait_for_packet_start();
-    //start reading packet
-    Serial.println(millis());
     char curr = ' ';
-    while (curr != '*') {
+    while (curr != TERM_CHAR) {
         if (Serial.available() > 0) {
             curr = (char) Serial.read();
             line[count] = curr;
@@ -49,23 +56,32 @@ void read_packet(uint8_t* led_colours)
     }
 }
 
+/**
+  * Polls for a packet to be available, helper func for read_packet
+  */
 void wait_for_packet_start() {
     while (true) {
         if (Serial.available() > 0) {
-            if (Serial.read() == '$') {
+            if (Serial.read() == START_CHAR) {
                 return;
             }
         }
     }
 }
 
+/**
+  * Parses a single line from an incoming packet, helper func for read_packet
+  *
+  * @param[in]  line
+  * @param[out] led_colours
+  */
 void parse_line(char* line, uint8_t* led_colours)
 {
     uint8_t curr_colour;
     uint16_t curr_led;
     char* token;
 
-    if (line[0] == '$' || line[0] == '*') {
+    if (line[0] == START_CHAR || line[0] == TERM_CHAR) {
         return;
     } else {
         token = strtok(line, ",");
@@ -76,18 +92,26 @@ void parse_line(char* line, uint8_t* led_colours)
     }
 }
 
+/**
+  * Iterates through all led_colours and writes the entire array to the led
+  * strip
+  *
+  * @param[in]  led_colours
+  */
 void write_packet(uint8_t* led_colours)
 {
     uint16_t i;
     for (i = 0; i < NUM_PIXELS; i++) {
         strip.setPixelColor(i, colourWheel((byte) led_colours[i]));
-        Serial.print(i);
-        Serial.print(",");
-        Serial.println((byte) led_colours[i]);
     }
     strip.show();
 }
 
+/**
+  * Used to convert a byte value to a colour value for the led strip
+  *
+  * @param[in]  value
+  */
 uint32_t colourWheel(byte value) {
     if(value < 85) {
         return (strip.Color(round((value * 3)/4), round((255 - (value * 3))/4), 0) );
