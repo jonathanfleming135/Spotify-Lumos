@@ -9,7 +9,7 @@ def main():
     LEDs = []
 
     for LED in range (0, 443):
-        LEDs.append((LED, 125))
+        LEDs.append((LED, 200))
     '''
     LED1 = (1, 100)
     LED2 = (2, 100)

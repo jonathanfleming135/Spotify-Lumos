@@ -63,6 +63,9 @@ void wait_for_packet_start() {
     while (true) {
         if (Serial.available() > 0) {
             if (Serial.read() == START_CHAR) {
+                uint32_t time1 = millis();
+                Serial.print("Start: ");
+                Serial.println(time1);
                 return;
             }
         }
@@ -105,6 +108,9 @@ void write_packet(uint8_t* led_colours)
         strip.setPixelColor(i, colourWheel((byte) led_colours[i]));
     }
     strip.show();
+    uint32_t time2 = millis();
+    Serial.print("End: ");
+    Serial.println(time2);
 }
 
 /**
