@@ -113,7 +113,11 @@ void write_packet(uint8_t* led_colours)
   * @param[in]  value
   */
 uint32_t colourWheel(byte value) {
-    if(value < 85) {
+    if (value == 0) {
+        return strip.Color(0, 0, 0);
+    } else if (value == 255) {
+        return strip.Color(32, 32, 32, 255);
+    } else if(value < 85) {
         return (strip.Color(round((value * 3)/4), round((255 - (value * 3))/4), 0) );
     } else if(value < 170) {
         value -= 85;
