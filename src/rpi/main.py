@@ -3,26 +3,21 @@ import arduino_control as arduino
 import constants as const
 
 def main():
+	# initalize serial port with arduino
 	port = arduino.init_port()
 
 	LEDs = []
-
-	for LED in range (0, const.CORNER_ONE):
-		LEDs.append((LED, 50))
-
-	for LED in range (const.CORNER_ONE, const.CORNER_TWO):
-		LEDs.append((LED, 100))
-
-	for LED in range (const.CORNER_TWO, const.CORNER_THREE):
-		LEDs.append((LED, 250))
-
-	for LED in range (const.CORNER_THREE, const.CORNER_FOUR):
+	for LED in range (0, const.ALL_LEDS):
 		LEDs.append((LED, 200))
 
 	arduino.write_packet(LEDs, port)
 
+	for LED in range (0, const.ALL_LEDS):
+		LEDs.append((LED, 250))
+
+	arduino.write_packet(LEDs, port)
+
 	while(True):
-		#idle for now
 		pass
 
 if __name__ == '__main__':
