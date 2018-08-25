@@ -7,13 +7,11 @@ def main():
 	port = arduino.init_port()
 
 	LEDs = []
-	for LED in range (0, const.ALL_LEDS):
-		LEDs.append((LED, 200))
+	LEDs.append((0, 200, const.ALL_LEDS))
 
 	arduino.write_packet(LEDs, port)
 
-	for LED in range (0, const.ALL_LEDS):
-		LEDs.append((LED, 250))
+	LEDs.append((0, 250, const.ALL_LEDS))
 
 	arduino.write_packet(LEDs, port)
 
