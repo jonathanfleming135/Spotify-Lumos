@@ -88,7 +88,19 @@ void parse_line(char* line, uint8_t* led_colours)
         curr_led = atoi(token);
         token = strtok(NULL, ",");
         curr_colour = atoi(token);
-        led_colours[curr_led] = curr_colour;
+
+        // Write multiple led's with the same colour
+        token = strtok(NULL, ",");
+        if (token != NULL) {
+            uint16_t start_led = curr_led;
+            uint16_t end_led = atoi(token);
+            for (int i = start_led; i < end_led; i++) {
+                led_colours[i % NUM_PIXELS] = curr_colour;
+            }
+        }
+        else {
+            led_colours[curr_led] = curr_colour;
+        }
     }
 }
 

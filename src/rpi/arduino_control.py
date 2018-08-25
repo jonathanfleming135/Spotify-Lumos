@@ -20,6 +20,9 @@ def encode_packet(LED_values):
         packet += str(LED[0])
         packet += ','
         packet += str(LED[1])
+        if (len(LED) == 3):
+            packet += ','
+            packet += str(LED[2])
         packet += '\n'
     packet = "$\n" + packet + "*"
     return packet
