@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import arduino_control as arduino
 import constants as const
+from patterns import *
 
 def main():
 	# initalize serial port with arduino
@@ -14,6 +15,8 @@ def main():
 	LEDs.append((0, 250, const.ALL_LEDS))
 
 	arduino.write_packet(LEDs, port)
+
+	shimmer.pattern()
 
 	while(True):
 		pass
