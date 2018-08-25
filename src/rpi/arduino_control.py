@@ -27,20 +27,22 @@ def encode_packet(LED_values):
     packet = "$\n" + packet + "*"
     return packet
 
-# Calculates time to wait for a given number of led's, calculation based
-# on measured values
+# Calculates time to wait for a given number of lines, calculation based
+# on measured values. Each line represents a single line of text in the packet
+# to be sent over serial - can contain a single led or multiple led's of the
+# same colour.
 #
 # @param[in]  num_leds
 # @return     time to wait (ms) before writing to led's again
-def time_to_next_write(num_leds):
+def time_to_next_write(num_lines):
     return round(const.WAIT_PER_LED * num_leds + 20)
 
-# Calculates the max number of leds that can be written given a wait time.
+# Calculates the max number of lines that can be written given a wait time.
 # Inverse of time_to_next_write, calculation based on measured values
 #
 # @param[in]  wait_time (ms)
 # #return     max amount of led's that can be written to
-def max_leds_per_write(wait_time):
+def max_lines_per_write(wait_time):
     if (wait_time <= 20):
         return 0
     else:
