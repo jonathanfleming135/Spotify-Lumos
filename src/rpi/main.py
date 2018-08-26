@@ -17,7 +17,7 @@ def main():
 
 	arduino.write_packet(LEDs)
 
-	#shimmer.pattern(10)
+	shimmer.pattern(10)
 
 	while(True):
 		pass
