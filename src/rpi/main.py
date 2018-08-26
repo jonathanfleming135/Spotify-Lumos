@@ -1,19 +1,23 @@
 #!/usr/bin/python
 import arduino_control as arduino
 import constants as const
+import time
+from patterns import *
 
 def main():
 	# initalize serial port with arduino
-	port = arduino.init_port()
+	arduino.init_port()
 
 	LEDs = []
 	LEDs.append((0, 200, const.ALL_LEDS))
 
-	arduino.write_packet(LEDs, port)
+	arduino.write_packet(LEDs)
 
 	LEDs.append((0, 250, const.ALL_LEDS))
 
-	arduino.write_packet(LEDs, port)
+	arduino.write_packet(LEDs)
+
+	#shimmer.pattern(10)
 
 	while(True):
 		pass
