@@ -17,9 +17,10 @@ def main():
 
 	arduino.write_packet(LEDs)
 
-	shimmer.pattern(10)
+
 
 	while(True):
+		shimmer.pattern(10)
 		pass
 
 if __name__ == '__main__':

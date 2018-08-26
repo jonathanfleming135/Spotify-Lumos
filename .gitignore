@@ -1,2 +1,5 @@
-#generated python cache files
+# generated python cache files
 *.pyc
+
+# client id
+client_id.txt

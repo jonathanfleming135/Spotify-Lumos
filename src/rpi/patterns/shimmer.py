@@ -8,11 +8,12 @@ def pattern(run_time):
 	start_time = util.clock()
 
 	num_leds = round(const.ALL_LEDS / 10.0)
-	time_between_writes = 100
+	time_between_writes = 125
 
 	num_leds = min(util.max_lines_per_write(time_between_writes), num_leds)
 
 	while (start_time + run_time > util.clock() ):
+		write_time = util.clock()
 		util.clear_leds()
 
 		LEDs = []
@@ -21,7 +22,6 @@ def pattern(run_time):
 			if ((curr_led, const.WHITE) not in LEDs):
 				LEDs.append((curr_led, const.WHITE))
 
-		write_time = util.clock()
 		arduino.write_packet(LEDs)
 		time_already_waited = util.clock() - write_time
 		util.sleep(time_between_writes - time_already_waited)
