@@ -20,7 +20,7 @@ def main():
 
 
 	while(True):
-		shimmer.pattern(10)
+		#shimmer.pattern(10)
 		pass
 
 if __name__ == '__main__':

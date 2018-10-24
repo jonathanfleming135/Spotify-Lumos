@@ -3,3 +3,9 @@
 
 # client id
 client_id.txt
+
+# metadata
+/metadata
+
+# vscode
+/.vscode
