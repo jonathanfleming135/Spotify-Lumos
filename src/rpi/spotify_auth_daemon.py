@@ -21,5 +21,27 @@ params = {
 }
 
 req = requests.post("https://accounts.spotify.com/api/token", data=params)
+response = req.json()
 
-print(req.text)
+access_token = 	response["access_token"]
+refresh_token = response["refresh_token"]
+expires_in = 	response["expires_in"]
+
+while (True):
+	#time.sleep(expires_in - 60)
+	time.sleep(10)
+
+	refresh_params = {
+		"grant_type": "refresh_token",
+		"refresh_token": refresh_token,
+		"client_id": str(client_id),
+		"client_secret": str(client_secret)
+	}
+
+	req = requests.post("https://accounts.spotify.com/api/token", data=refresh_params)
+	response = req.json()
+
+	expires_in = 	response["expires_in"]
+	access_token = 	response["access_token"]
+
+	print(req.text)
