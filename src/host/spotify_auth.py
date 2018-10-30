@@ -3,39 +3,57 @@
 import webbrowser
 import time
 import socket
+import subprocess
 import re
+import datetime
 
-'''
-id_file = open("../rpi/client_id.txt", "r")
-id_str = id_file.read(1000)
+
+id_file = open("client_id.txt", "r")
+id_str = id_file.read()
 id_file.close()
 
 client_id, client_secret = id_str.split(",")
-print(client_id)
-'''
+
+
 
 local_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 local_socket.bind(('127.0.0.1', 8080))
 local_socket.listen()
 
-html = '<h1><span style="color: #ff0000;">You</span> <span style="color: #ff6600;">are</span> <span style="color: #ffff00;">now</span> <span style="color: #339966;">connected</span> <span style="color: #0000ff;">to</span> <span style="color: #333399;">spotify</span>-<span style="color: #993366;">lumos</span>!</h1><p>&nbsp;</p>'
+html_f = open("you_are_now_connected.html", 'r')
+html = html_f.read()
+html_f.close()
 
-url = "https://accounts.spotify.com/authorize/?client_id=fa731c70a97a467cba0096e77092dad4&redirect_uri=http://127.0.0.1:8080&response_type=code"
-chrome_path = "/usr/bin/google-chrome"
+url_params = {
+	"auth_url": "https://accounts.spotify.com/authorize/",
+	"client_id":  "client_id={0}".format(client_id),
+	"redirect": "redirect_uri=http://127.0.0.1:8080",
+	"response": "response_type=code"
+}
+
+url = url_params["auth_url"]
+url += "?" + url_params["client_id"]
+url += "&" + url_params["redirect"]
+url += "&" + url_params["response"]
+
 webbrowser.open_new_tab(url)
 
+res_params = {
+	"HTTP": "HTTP/1.1 200 OK\n",
+	"Date": "Date: {0}\n".format(str(datetime.datetime.now())),#Wed, 11 Apr 2012 21:29:04 GMT\n",#{0}\n".format(str(datetime.datetime.now())),
+	"Server": "Server: Python/6.6.6 (custom)\n",
+	"Connection": "Connection: closed\n",
+	"Content-Type": "Content-Type: text/html \n\n",
+	"html": "<html>\n{0}</html>".format(html)
+}
 
-
-response = '''
-HTTP/1.1 200 OK
-Date: Wed, 11 Apr 2012 21:29:04 GMT
-Server: Python/6.6.6 (custom)
-Connection: closed
-Content-Type: text/html \n
-<html>
-<h1><span style="color: #ff0000;">You</span> <span style="color: #ff6600;">are</span> <span style="color: #f4d03f;">now</span> <span style="color: #4cd900;">connected</span> <span style="color: #0000ff;">to</span> <span style="color: #333399;">spotify</span>-<span style="color: #993366;">lumos</span>!</h1><p>&nbsp;</p>
-</html>
-'''
+response = ""
+response += res_params["HTTP"]
+response += res_params["Date"]
+response += res_params["Server"]
+response += res_params["Connection"]
+response += res_params["Content-Type"]
+response += res_params["html"]
 
 
 connection, addr = local_socket.accept()
@@ -45,7 +63,15 @@ while True:
 		print(data)
 		connection.send(response.encode())
 		local_socket.close()
+		connection.close()
 		break
 
 regex = re.search('code=(\S+)', data.decode())
-print(regex.group(1))
+token = regex.group(1)
+
+token_file = open("../../metadata/token.txt", "w+")
+token_file.write(token)
+token_file.close()
+
+# may not be necessary since sshfs
+#bashCommand = "scp {0} lumos:~/spotify-lumos/metadata"

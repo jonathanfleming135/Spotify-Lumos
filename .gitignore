@@ -9,3 +9,6 @@ client_id.txt
 
 # vscode
 /.vscode
+
+# swap files
+*.swp
