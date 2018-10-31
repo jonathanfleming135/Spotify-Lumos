@@ -4,6 +4,9 @@ import webbrowser
 import socket
 import re
 import datetime
+import os
+# import subprocess
+import time
 
 # get the client id and secret from metadata
 id_file = open("../../metadata/client_id.txt", "r")
@@ -61,8 +64,8 @@ while True:
 	data = connection.recv(1024)
 	if (data):
 		connection.send(response.encode())
+		# socket.shutdown(local_socket)
 		local_socket.close()
-		connection.close()
 		break
 
 # parse response and write token to file
@@ -72,3 +75,6 @@ token = regex.group(1)
 token_file = open("../../metadata/token.txt", "w+")
 token_file.write(token)
 token_file.close()
+
+# start refresh token daemon on the rpi
+os.system('ssh lumos \'cd ~/spotify-lumos/src/scripts; python3 spotify_auth_daemon.py\' &>/dev/null &')
