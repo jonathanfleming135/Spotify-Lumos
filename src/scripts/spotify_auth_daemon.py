@@ -27,9 +27,12 @@ access_token = 	response["access_token"]
 refresh_token = response["refresh_token"]
 expires_in = 	response["expires_in"]
 
+access_token_file = open("../../metadata/access_token.txt", "w+")
+access_token_file.write(access_token)
+access_token_file.close()
+
 while (True):
-	#time.sleep(expires_in - 60)
-	time.sleep(10)
+	time.sleep(expires_in - 60)
 
 	refresh_params = {
 		"grant_type": "refresh_token",
@@ -44,4 +47,6 @@ while (True):
 	expires_in = 	response["expires_in"]
 	access_token = 	response["access_token"]
 
-	print(req.text)
+	access_token_file = open("../../metadata/access_token.txt", "w+")
+	access_token_file.write(access_token)
+	access_token_file.close()
