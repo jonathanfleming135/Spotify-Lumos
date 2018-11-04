@@ -24,13 +24,15 @@ url_params = {
 	"auth_url": "https://accounts.spotify.com/authorize/",
 	"client_id":  "client_id={0}".format(client_id),
 	"redirect": "redirect_uri=http://127.0.0.1:8080",
-	"response": "response_type=code"
+	"response": "response_type=code",
+	"scope": "scope=user-read-playback-state"
 }
 
 url = url_params["auth_url"]
 url += "?" + url_params["client_id"]
 url += "&" + url_params["redirect"]
 url += "&" + url_params["response"]
+url += "&" + url_params["scope"]
 
 # build response for local redirect
 res_params = {
