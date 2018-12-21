@@ -66,7 +66,6 @@ while True:
 	data = connection.recv(1024)
 	if (data):
 		connection.send(response.encode())
-		# socket.shutdown(local_socket)
 		local_socket.close()
 		break
 
