@@ -56,6 +56,25 @@ def get_currently_playing_song():
 		uri = req["item"]["uri"].split(":")[-1]
 		return uri
 
+def get_song_progress():
+	'''
+	This method always makes an api request to get the most updated
+	song progress
+
+	All times expressed in seconds expressed as a float
+	'''
+
+	global token
+
+	headers = {
+			"Authorization": "Bearer {0}".format(token)
+		}
+
+	req = requests.get(get_current_song_endpoint, headers=headers)
+	req = req.json()
+
+	return float(req["progress_ms"]) / 1000.0
+
 def check_currently_playing_song():
 	'''
 	This method should be called every 3 seconds - to check the currently

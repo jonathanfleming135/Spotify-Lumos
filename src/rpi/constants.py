@@ -9,7 +9,19 @@ CORNER_FOUR = ALL_LEDS
 
 # colours
 BLACK = 0
+YELLOW = 45
+ORANGE = 55
+RED = 80
+PINK = 110
+PURPLE = 125
+BLUE = 160
+INDIGO = 210
+GREEN = 250
 WHITE = 255
 
 # arduino_control
 WAIT_PER_LED = 0.8
+
+# pitches and colours
+NUM_COLOURS = 256
+NUM_PITCHES = 12
