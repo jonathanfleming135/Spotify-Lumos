@@ -4,6 +4,8 @@ import time
 import constants as const
 import utils as util
 
+next_write_time = 0.0
+
 def init_port():
     '''
     Initializes Serial port for communication with Arduino
@@ -20,10 +22,9 @@ def write_packet(LED_values):
                 should be written to
     '''
     packet = encode_packet(LED_values)
-    port.write(packet.encode())
-    # TODO: This should use a budget approach instead, implement this asap
-    sleep_time = util.time_to_next_write(len(LED_values))
-    util.sleep(sleep_time)
+    if (util.clock() >= next_write_time):
+        port.write(packet.encode())
+        next_write_time = util.time_to_next_write(len(LED_values)) + util.clock()
 
 def encode_packet(LED_values):
     '''
