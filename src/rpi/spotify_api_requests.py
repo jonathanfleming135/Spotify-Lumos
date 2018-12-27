@@ -25,8 +25,8 @@ analysis_change = False
 
 def get_currently_playing_song():
 	'''
-	This method will be used like a "private" method for this file,
-	it should not be called by methods outside this file.
+	This function will be used like a "private" function for this file,
+	it should not be called by functions outside this file.
 
 	All times expressed in seconds expressed as a float
 
@@ -58,7 +58,7 @@ def get_currently_playing_song():
 
 def get_song_progress():
 	'''
-	This method always makes an api request to get the most updated
+	This function always makes an api request to get the most updated
 	song progress
 
 	All times expressed in seconds expressed as a float
@@ -77,7 +77,7 @@ def get_song_progress():
 
 def check_currently_playing_song():
 	'''
-	This method should be called every 3 seconds - to check the currently
+	This function should be called every 3 seconds - to check the currently
 	playing song hasn't changed (in the case a user manually selects a
 	different song)
 	'''
@@ -102,7 +102,7 @@ def check_currently_playing_song():
 		features_change = True
 		analysis_change = True
 		uri = curr_song_uri
-		#TODO - call method to recalculate patterns for a song
+		#TODO - call function to recalculate patterns for a song
 
 def get_song_features():
 	'''

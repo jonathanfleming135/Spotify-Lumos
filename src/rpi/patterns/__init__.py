@@ -1,1 +1,2 @@
-__all__ = ["shimmer", "pitch"]
+__all__ = ["shimmer",
+	   "pitch"]

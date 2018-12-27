@@ -16,16 +16,21 @@ def write_packet(LED_values):
     Writes a list of led values to the Arduino, waits till the next available led
     write time without stopping the clock
 
-    @param[in]  LED_values
+    @param[in]  LED_values - a list of tuples containing the colour value each led
+                should be written to
     '''
     packet = encode_packet(LED_values)
     port.write(packet.encode())
+    # TODO: This should use a budget approach instead, implement this asap
     sleep_time = util.time_to_next_write(len(LED_values))
     util.sleep(sleep_time)
 
 def encode_packet(LED_values):
     '''
     Encodes a packet to send to the Arduino
+
+    @param[in]  LED_values - a list of tuples containing the colour value each led
+                should be written to
     '''
     packet = ""
     for LED in LED_values:

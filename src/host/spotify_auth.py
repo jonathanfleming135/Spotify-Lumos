@@ -5,7 +5,6 @@ import socket
 import re
 import datetime
 import os
-# import subprocess
 import time
 
 # get the client id and secret from metadata

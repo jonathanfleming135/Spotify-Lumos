@@ -3,8 +3,14 @@ import constants as const
 import random as rand
 import utils as util
 
-def pattern(run_time):
-	run_time = run_time * 1000.0
+#TODO: rewrite this pattern based on budget type time scheduling
+def pattern(duration):
+	'''
+	Performs the shimmer pattern for the duration specified
+
+	@param duration - the duration this pattern should run for
+	'''
+	duration = duration * 1000.0
 	start_time = util.clock()
 
 	num_leds = round(const.ALL_LEDS / 10.0)
@@ -12,7 +18,7 @@ def pattern(run_time):
 
 	num_leds = min(util.max_lines_per_write(time_between_writes), num_leds)
 
-	while (start_time + run_time > util.clock() ):
+	while (start_time + duration > util.clock() ):
 		write_time = util.clock()
 		util.clear_leds()
 

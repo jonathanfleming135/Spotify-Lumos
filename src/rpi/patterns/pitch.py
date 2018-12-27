@@ -8,6 +8,12 @@ import spotify_api_requests as spot_api
 COLOURS_PER_PITCH = const.NUM_COLOURS / const.NUM_PITCHES
 
 def pattern(progress, duration):
+	'''
+	Performs the pitch pattern for the duration specified
+
+	@param progress - the progress made in the currently playing song
+	@param duration - the duration this pattern should run for
+	'''
 	segments = spot_api.get_song_analysis()["segments"]
 
 	while (progress < duration and len(segments) > 0):
@@ -34,19 +40,24 @@ def pattern(progress, duration):
 		else:
 			colour = COLOURS_PER_PITCH * pitch_index
 
-		colour_int = round(colour)
-		if (colour_int == 0 or colour_int == 255):
-			colour_int += 1
+		colour = round(colour)
 
-		print(colour_int)
-		LEDs = [(0, colour_int, const.ALL_LEDS)]
+		# avoid using special colour values
+		if (colour == 0 or colour == 255):
+			colour += 1
+
+		LEDs = [(0, colour, const.ALL_LEDS)]
 		arduino.write_packet(LEDs)
 
 		progress += segments[0]["duration"]
 		util.sleep(segments[0]["duration"] * 1000.0)
 
 def get_pitch_index(pitches):
-	i = 0
+	'''
+	Helper function to retrieve the current pitch
+
+	@param pitches - the list of pitches as return from the spotify api request
+	'''
 	for i in range(0, len(pitches)):
 		if (pitches[i] == 1.0):
 			return i
