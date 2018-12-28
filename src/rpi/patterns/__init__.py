@@ -1,2 +1,3 @@
 __all__ = ["shimmer",
-	   "pitch"]
+	   "pitch",
+	   "volume"]
