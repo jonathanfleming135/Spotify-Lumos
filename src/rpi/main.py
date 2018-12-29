@@ -3,6 +3,7 @@ import arduino_control as arduino
 import constants as const
 import spotify_api_requests as spot_api
 import time
+import utils
 import pprint
 from patterns import *
 
@@ -18,7 +19,9 @@ def main():
 
 		song_progress = spot_api.get_song_progress()
 		song_duration = spot_api.get_song_features()["duration_ms"] / 1000.0
-		pitch.pattern(song_progress, song_duration - song_progress)
+		print("pattern start")
+		volume.pattern(song_progress, song_duration - song_progress)
+		print("pattern end")
 		pass
 
 if __name__ == '__main__':

@@ -12,6 +12,8 @@ def pattern(progress, duration):
 	@param progress - the progress made in the currently playing song
 	@param duration - the duration this pattern should run for
 	'''
+	util.clear_leds()
+
 	segments = spot_api.get_song_analysis()["segments"]
 	max_loudness = get_max_loudness(segments)
 	min_loudness = get_min_loudness(segments)
@@ -23,15 +25,18 @@ def pattern(progress, duration):
 
 		curr_segment = segments[0]
 
-		curr_loudness = curr_segment["loudness_max"]
+		curr_loudness = (curr_segment["loudness_start"] + segments[1]["loudness_start"]) / 2.0
 		curr_loudness_diff = curr_loudness - min_loudness
 		loudness_percent = curr_loudness_diff / loudness_diff
 
-		num_leds = round(loudness_percent * (const.CORNER_ONE - const.CORNER_ZERO))
+		print(loudness_percent)
+		num_leds = int(round(loudness_percent * (const.CORNER_ONE - const.CORNER_ZERO)))
 		LEDs = []
 		opposite_led = const.CORNER_THREE - num_leds
-		LEDs.append(const.CORNER_ZERO, const.RED, num_leds)
-		LEDs.append(opposite_led, const.RED, num_leds)
+		LEDs.append((const.CORNER_ZERO, const.PURPLE, num_leds))
+		LEDs.append((num_leds, const.BLACK, const.CORNER_TWO + (const.CORNER_ONE - num_leds) ))
+		LEDs.append((const.CORNER_TWO + (const.CORNER_ONE - num_leds), const.PURPLE, const.CORNER_THREE))
+		LEDs.append((const.CORNER_THREE, const.PURPLE, const.CORNER_FOUR))
 		arduino.write_packet(LEDs)
 
 		progress += segments[0]["duration"]

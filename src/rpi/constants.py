@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # led positions
-ALL_LEDS = 442
+ALL_LEDS = 422
 CORNER_ZERO = 0
 CORNER_ONE = 120
 CORNER_TWO = 211
