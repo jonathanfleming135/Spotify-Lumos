@@ -20,10 +20,8 @@ def pattern(progress, duration):
 	while (progress < duration and len(segments) > 0):
 		while (segments[0]["start"] < progress):
 			segments.pop(0)
-		curr_segment = segments[0]
 
-		# loudness_start = segments[0]["loudness_start"]
-		# loudness_end = segments[0]["loudness_end"]
+		curr_segment = segments[0]
 
 		curr_loudness = curr_segment["loudness_max"]
 		curr_loudness_diff = curr_loudness - min_loudness

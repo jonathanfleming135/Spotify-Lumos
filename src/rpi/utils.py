@@ -32,9 +32,9 @@ def sleep(time_ms):
 
     @param[in]  time_ms
     '''
-	start_time = clock()
-	while (clock() < start_time + time_ms ):
-		pass
+    start_time = clock()
+    while (clock() < start_time + time_ms):
+        pass
 
 def clear_leds():
     '''

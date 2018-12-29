@@ -19,7 +19,6 @@ def main():
 		song_progress = spot_api.get_song_progress()
 		song_duration = spot_api.get_song_features()["duration_ms"] / 1000.0
 		pitch.pattern(song_progress, song_duration - song_progress)
-
 		pass
 
 if __name__ == '__main__':

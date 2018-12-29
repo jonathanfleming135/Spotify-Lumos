@@ -21,6 +21,8 @@ def write_packet(LED_values):
     @param[in]  LED_values - a list of tuples containing the colour value each led
                 should be written to
     '''
+    global next_write_time
+
     packet = encode_packet(LED_values)
     if (util.clock() >= next_write_time):
         port.write(packet.encode())
