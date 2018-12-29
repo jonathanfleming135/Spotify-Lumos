@@ -32,8 +32,8 @@ def pattern(progress, duration):
 		curr_loudness_diff = curr_loudness - min_loudness
 		loudness_percent = curr_loudness_diff / loudness_diff
 
-		print(loudness_percent)
-		num_leds = int(round(loudness_percent * (const.CORNER_ONE - const.CORNER_ZERO)))
+		# print(loudness_percent)
+		num_leds = int(round(loudness_percent * ((const.CORNER_ONE - const.CORNER_ZERO)/2.0)))
 		LEDs = []
 		opposite_led = const.CORNER_THREE - num_leds
 
@@ -41,8 +41,13 @@ def pattern(progress, duration):
 		colour = get_colour_from_pitches(pitches)
 
 		LEDs.append((const.CORNER_ZERO, colour, num_leds))
-		LEDs.append((num_leds, const.BLACK, const.CORNER_TWO + (const.CORNER_ONE - num_leds) ))
-		LEDs.append((const.CORNER_TWO + (const.CORNER_ONE - num_leds), colour, const.CORNER_FOUR))
+		LEDs.append((num_leds, const.BLACK, const.CORNER_ONE - num_leds))
+		LEDs.append((const.CORNER_ONE - num_leds, colour, const.CORNER_TWO + num_leds))
+		LEDs.append((const.CORNER_TWO + num_leds, const.BLACK, const.CORNER_THREE - num_leds))
+		LEDs.append((const.CORNER_THREE - num_leds, colour, const.CORNER_FOUR))
+
+		# LEDs.append((num_leds, const.BLACK, const.CORNER_TWO + (const.CORNER_ONE - num_leds) ))
+		# LEDs.append((const.CORNER_TWO + (const.CORNER_ONE - num_leds), colour, const.CORNER_FOUR))
 		arduino.write_packet(LEDs)
 
 		progress += segments[0]["duration"]
