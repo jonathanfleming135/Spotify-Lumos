@@ -15,13 +15,13 @@ def main():
 	while(True):
 		if(time.clock() > next_check_time):
 			spot_api.check_currently_playing_song()
-			next_check_time = time.clock() + 3.0
+			next_check_time = time.clock() + 1.0
 
-		song_progress = spot_api.get_song_progress()
 		song_duration = spot_api.get_song_features()["duration_ms"] / 1000.0
-		print("pattern start")
-		volume.pattern(song_progress, song_duration - song_progress)
-		print("pattern end")
+		song_analysis = spot_api.get_song_analysis()
+		song_progress = spot_api.get_song_progress()
+
+		volume.pattern(song_duration - song_progress, song_analysis)
 		pass
 
 if __name__ == '__main__':
