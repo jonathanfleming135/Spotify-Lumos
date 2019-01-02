@@ -1,18 +1,14 @@
 import arduino_control as arduino
 import constants as const
-import random as rand
-import time
 import utils as util
 import spotify_api_requests as spot_api
-
-COLOURS_PER_PITCH = const.NUM_COLOURS / const.NUM_PITCHES
 
 def pattern(duration, analysis):
 	'''
 	Performs the volume pattern for the duration specified
 
-	@param progress - the progress made in the currently playing song
-	@param duration - the duration this pattern should run for
+	@param duration - duration this pattern should run for (seconds)
+	@param analysis - song analysis returned from the spotify api call
 	'''
 	prep_time_start = util.clock()
 	util.clear_leds()
@@ -30,11 +26,13 @@ def pattern(duration, analysis):
 	while (len(segments) > 0 and segments[0]["start"] < progress):
 		segments.pop(0)
 
-	if (len(segments) > 2):
+	if (len(segments) > 1):
 		init_time_diff = progress - segments[0]["start"]
 		util.sleep(init_time_diff * 1000.0)
 		segments.pop(0)
 
+	prev_colour = 0
+	prev_loudness_percent = 0
 	while (progress < duration and len(segments) > 1):
 		curr_segment_time_start = util.clock()
 
@@ -45,31 +43,16 @@ def pattern(duration, analysis):
 		loudness_diff = loudness - min_loudness
 		loudness_percent = loudness_diff / max_loudness_diff
 
-		max_led_slice = (const.CORNER_ONE - const.CORNER_ZERO) / 2.0
-		led_slice = int(round(loudness_percent * max_led_slice))
-
 		pitches = curr_segment["pitches"]
 		colour = get_colour_from_pitches(pitches)
 
-		LEDs = []
-		if (loudness_percent >= 1.0):
-			LEDs.append(const.CORNER_ZERO, colour, const.ALL_LEDS)
-		elif (loudness_percent <= 0.0):
-			LEDs.append((const.CORNER_ZERO, const.BLACK, const.CORNER_ONE))
-			LEDs.append((const.CORNER_ONE, colour, const.CORNER_TWO))
-			LEDs.append((const.CORNER_TWO, const.BLACK, const.CORNER_THREE))
-			LEDs.append((const.CORNER_THREE, colour, const.CORNER_FOUR))
-		else:
-			LEDs.append((const.CORNER_ZERO, colour, led_slice))
-			LEDs.append((led_slice, const.BLACK, const.CORNER_ONE - led_slice))
-			LEDs.append((const.CORNER_ONE - led_slice, colour, const.CORNER_TWO + led_slice))
-			LEDs.append((const.CORNER_TWO + led_slice, const.BLACK, const.CORNER_THREE - led_slice))
-			LEDs.append((const.CORNER_THREE - led_slice, colour, const.CORNER_FOUR))
+		if (curr_segment["confidence"] <= 0.1):
+			colour = prev_colour
+			loudness_percent = prev_loudness_percent
 
-		arduino.write_packet(LEDs)
+		write_leds(colour, loudness_percent)
 
 		curr_segment_time_end = util.clock()
-
 		segment_time_diff = curr_segment_time_end - curr_segment_time_start
 		sleep_time = (curr_segment["duration"] * 1000.0) - segment_time_diff
 
@@ -80,12 +63,43 @@ def pattern(duration, analysis):
 		while (len(segments) > 0 and segments[0]["start"] < progress):
 			segments.pop(0)
 
+		prev_colour = colour
+		prev_loudness_percent = loudness_percent
+
+def write_leds(colour, loudness_percent):
+	'''
+	Helper function to write the led values to the arduino
+
+	@param colour - the colour value to write
+	@param loudness_percent - loudness as a percent of the max loudness
+	'''
+	max_led_slice = (const.CORNER_ONE - const.CORNER_ZERO) / 2.0
+	led_slice = int(round(loudness_percent * max_led_slice))
+
+	LEDs = []
+	if (loudness_percent >= 1.0):
+		LEDs.append(const.CORNER_ZERO, colour, const.ALL_LEDS)
+	elif (loudness_percent <= 0.0):
+		LEDs.append((const.CORNER_ZERO, const.BLACK, const.CORNER_ONE))
+		LEDs.append((const.CORNER_ONE, colour, const.CORNER_TWO))
+		LEDs.append((const.CORNER_TWO, const.BLACK, const.CORNER_THREE))
+		LEDs.append((const.CORNER_THREE, colour, const.CORNER_FOUR))
+	else:
+		LEDs.append((const.CORNER_ZERO, colour, led_slice))
+		LEDs.append((led_slice, const.BLACK, const.CORNER_ONE - led_slice))
+		LEDs.append((const.CORNER_ONE - led_slice, colour, const.CORNER_TWO + led_slice))
+		LEDs.append((const.CORNER_TWO + led_slice, const.BLACK, const.CORNER_THREE - led_slice))
+		LEDs.append((const.CORNER_THREE - led_slice, colour, const.CORNER_FOUR))
+	arduino.write_packet(LEDs)
+
 def get_max_loudness(segments):
 	'''
 	Helper function to retrieve the max loudness of the song
 
 	@param segments - the list of segments as returned from the spotify api request
+	@return max loudness_max property amongst all segments
 	'''
+	# loudness should never be below -100 db
 	max_loudness = -100.0
 	for i in range(0, len(segments)):
 		curr_loudness = segments[i]["loudness_max"]
@@ -98,7 +112,9 @@ def get_min_loudness(segments):
 	Helper function to retrieve the min loudness of the song
 
 	@param segments - the list of segments as returned from the spotify api request
+	@return min loudness_min property amongst all segments
 	'''
+	# loudness should never be above 100 db
 	min_loudness = 100.0
 	for i in range(0, len(segments)):
 		curr_loudness = segments[i]["loudness_max"]
@@ -122,11 +138,11 @@ def get_colour_from_pitches(pitches):
 	Get's the colour corresponding to the pitch of the sound
 
 	@param pitches - the list of pitches as return from the spotify api request
-	@return colour
+	@return colour value (0-255)
 	'''
+	COLOURS_PER_PITCH = const.NUM_COLOURS / const.NUM_PITCHES
 
 	pitch_index = get_pitch_index(pitches)
-
 	pitch_index_above = (pitch_index + 1) % (const.NUM_PITCHES - 1)
 	pitch_index_below = (pitch_index - 1) % (const.NUM_PITCHES - 1)
 
