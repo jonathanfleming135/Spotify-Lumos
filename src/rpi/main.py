@@ -1,10 +1,6 @@
-#!/usr/bin/python
 import arduino_control as arduino
-import constants as const
 import spotify_api_requests as spot_api
 import time
-import utils
-import pprint
 from patterns import *
 
 def main():

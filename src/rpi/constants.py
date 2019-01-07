@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # led positions
 ALL_LEDS = 422
 CORNER_ZERO = 0

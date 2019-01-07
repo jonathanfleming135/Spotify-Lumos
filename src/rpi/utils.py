@@ -4,11 +4,11 @@ import constants as const
 
 def time_to_next_write(num_lines):
     '''
-    Calculates time to wait for a given number of lines, calculation based
+    Calculates time to wait for a given number of lines - calculation based
     on measured values. Each line represents a single line of text in the packet
     to be sent over serial
 
-    @param[in]  num_leds
+    @param[in]  num_lines
     @return     time to wait (ms) before writing to led's again
     '''
     return round(const.WAIT_PER_LED * num_lines + 20)

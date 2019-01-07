@@ -1,7 +1,5 @@
-#!/usr/bin/python
 import serial
 import time
-import constants as const
 import utils as util
 
 next_write_time = 0.0
@@ -33,7 +31,9 @@ def encode_packet(LED_values):
     Encodes a packet to send to the Arduino
 
     @param[in]  LED_values - a list of tuples containing the colour value each led
-                should be written to
+                should be written to. List elements can also be triplets, in which
+                case the triplet specifies a row of LEDs to light up (with the third
+                number representing the LED to write to).
     '''
     packet = ""
     for LED in LED_values:

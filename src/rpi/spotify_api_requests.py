@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import requests
 import time
 
@@ -12,12 +11,12 @@ get_current_song_endpoint =  "https://api.spotify.com/v1/me/player/currently-pla
 get_song_analysis_endpoint = "https://api.spotify.com/v1/audio-analysis/"
 get_song_features_endpoint = "https://api.spotify.com/v1/audio-features/"
 
-# song timing
+# song timing globals
 curr_song_end_time = -1.0
 uri = ""
 song_change = False
 
-# song analysis and features
+# song analysis and features globals
 song_features = {}
 song_analysis = {}
 features_change = False
@@ -67,8 +66,8 @@ def get_song_progress():
 	global token
 
 	headers = {
-			"Authorization": "Bearer {0}".format(token)
-		}
+		"Authorization": "Bearer {0}".format(token)
+	}
 
 	req = requests.get(get_current_song_endpoint, headers=headers)
 	req = req.json()
@@ -94,7 +93,6 @@ def check_currently_playing_song():
 
 	req = requests.get(get_current_song_endpoint, headers=headers)
 	req = req.json()
-
 
 	curr_song_uri = req["item"]["uri"].split(":")[-1]
 	if (uri != curr_song_uri):
@@ -144,6 +142,7 @@ def get_song_analysis():
 
 	It is meant to be called anywhere in the code
 	'''
+
 	global token
 	global uri
 	global song_analysis
