@@ -2,7 +2,7 @@
 An RGB LED strip that synchronizes with music playing from Spotify!
 
 ## Background/Summary
-This idea behind this project is to get a fully addressable RGB LED strip to automatically synchronize to whatever song is currently playing on spotify. It is a personal project I have been working for fun and coding practice. A user should be able to simply connect to spotify-lumos through a mobile device and then play songs normally on spotify to get it to work!
+The idea behind this project is to get a fully addressable RGB LED strip to automatically synchronize to whatever song is currently playing on spotify. It is a personal project I have been working for fun and coding practice. A user should be able to simply connect to spotify-lumos through a mobile device and then play songs normally on spotify to get it to work!
 
 ## Progress
 Currently, the "minimum viable product" version of this project is complete. Currently I am able to connect to the spotify-lumos Raspberry Pi via my phone and play songs through spotify. The strip then detects a song is being played, and lights up the LEDs accordingly. Currently, only one pattern exists and changes the number of LEDs lit up based on volume, along with colour based on pitch.
