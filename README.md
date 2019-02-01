@@ -1,7 +1,7 @@
 # Spotify Lumos
 A fully addressable RGB LED strip that synchronizes with music playing from Spotify!
 
-[Sample Video](https://youtu.be/Ehpbet-ZupI)
+[Spotify Lumos Demo](https://youtu.be/Ehpbet-ZupI)
 
 ## Background/Summary
 The idea behind this project is to get a fully addressable RGB LED strip to automatically synchronize to whatever song is currently playing on spotify. It is a personal project I have been working for fun and coding practice. A user should be able to simply connect to spotify-lumos through a mobile device and then play songs normally on spotify to get it to work!
